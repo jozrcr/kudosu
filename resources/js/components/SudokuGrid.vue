@@ -1,7 +1,7 @@
 <template>
 
-    <ul class=" bg-gray-500 p-3 rounded-lg max-w-7xl w-fit  h-fit grid grid-rows-9  gap-1 ">
-        <li v-for="(row, rowIndex) in initialBoard" :key="rowIndex"  class="row grid grid-cols-9 gap-1 sudoku-grid place-content-center justify-items-center">
+    <ul class=" bg-gray-500/50 p-1  rounded-lg max-w-7xl w-fit  h-fit grid grid-rows-9  gap-[0.1rem] md:gap-1 ">
+        <li v-for="(row, rowIndex) in initialBoard" :key="rowIndex"  class="row grid grid-cols-9 gap-[0.1rem] md:gap-1 sudoku-grid place-content-center justify-items-center">
             <SudokuCell
                 v-for="(cell, colIndex) in row"
                 :key="colIndex"
@@ -78,6 +78,29 @@ const updateCell = (rowIndex, colIndex, value) => {
   margin-left: 0.25rem;
 
 }
+@media only screen and (max-width: 600px) {
+  .sudoku-grid:nth-child(3n) {
+
+padding-bottom: 0.1rem;
+
+}
+
+.sudoku-grid:nth-child(3n + 1) {
+
+padding-top: 0.1rem;
+
+}
+
+.sudoku-grid > div:nth-child(3n) {
+margin-right: 0.1rem;
+
+}
+
+.sudoku-grid > div:nth-child(3n+1) {
+margin-left: 0.1rem;
+
+}
+} 
 
 
 
