@@ -104,7 +104,7 @@ const validateSudoku = () => {
 //Function to check if a cell is duplicate in a row
 const isValidCellRow = (rowIndex, colIndex, cellValue) => {
     for(let i = 0; i < maxValue.value; i++) {
-        if( board.value[rowIndex][i] === cellValue && colIndex !== i ){
+        if( board.value[rowIndex][i] === cellValue && colIndex != i ){
             return false;
         }
     }
@@ -114,7 +114,7 @@ const isValidCellRow = (rowIndex, colIndex, cellValue) => {
 //Function to check if a cell is duplicate in a col
 const isValidCellCol = (rowIndex, colIndex, cellValue) => {
     for(let i = 0; i < maxValue.value; i++) {
-        if( board.value[i][colIndex] == cellValue && rowIndex !== i ){
+        if( board.value[i][colIndex] == cellValue && rowIndex != i ){
             return false;
         }
     }
@@ -125,13 +125,16 @@ const isValidCellCol = (rowIndex, colIndex, cellValue) => {
 const isValidCellBox = (rowIndex, colIndex, cellValue) => {
 
     const boxWidth = Math.sqrt(maxValue.value);
-    //Define which box we are validating
-    const row = rowIndex - (rowIndex % boxWidth);
-    const col = colIndex - (colIndex % boxWidth);
 
-    for (let i = 0; i < row + boxWidth; i++){
-        for (let j = 0; j < col + boxWidth; j++){
-            if( board.value[i][j] === cellValue && i != rowIndex && j !== colIndex){
+    //Define which box we are validating
+    const row = Math.trunc(rowIndex / boxWidth) * boxWidth;
+    const col = Math.trunc(colIndex / boxWidth) * boxWidth;
+
+    for (let i = 0; i < boxWidth; i++){
+        for (let j = 0; j < boxWidth; j++){
+            const newRow =  row + i;
+            const newCol = col + j;
+            if(  ( board.value[newRow][newCol] === cellValue ) && newRow != rowIndex && newCol != colIndex ){
                 return false;
             }
         }
@@ -139,9 +142,10 @@ const isValidCellBox = (rowIndex, colIndex, cellValue) => {
     return true;
 } 
 
-
 const emptyCell = (rowIndex, colIndex) => {
     board.value[rowIndex][colIndex] = 0;
+
+    errorBoard.value = validateSudoku();
 }
 
 </script>
