@@ -32,6 +32,10 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    isError: {
+        type: Boolean,
+        default: false
+    },
     maxValue: {
         type: Number,
         required: true,
@@ -48,9 +52,18 @@ const displayValue = computed(() => {
 })
 
 const cellClasses = computed(() => {
-    return props.baseValue > 0
-        ? 'select-none w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:h-14 lg:w-14 xl:w-16 xl:h-16 2xl:w-20 2xl:h-20 aspect-square rounded-sm bg-white relative text-black text-lg md:text-xl lg:text-2xl 2xl:text-3xl flex items-center justify-center'
-        : 'select-none w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:h-14 lg:w-14 xl:w-16 xl:h-16 2xl:w-20 2xl:h-20 aspect-square rounded-sm bg-white relative hover:bg-gray-100 ease-in-out duration-200 transition-colors cursor-pointer text-gray-500 text-lg md:text-xl lg:text-2xl 2xl:text-3xl  flex items-center justify-center'
+    let classes = 'select-none w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:h-14 lg:w-14 xl:w-16 xl:h-16 2xl:w-20 2xl:h-20 aspect-square rounded-sm relative text-lg md:text-xl lg:text-2xl 2xl:text-3xl flex items-center justify-center';
+    if (!props.isError){
+        classes += props.baseValue > 0
+            ? ' bg-white text-black'
+            : ' bg-white relative hover:bg-gray-100 ease-in-out duration-200 transition-colors cursor-pointer text-gray-500';
+    }
+    else {
+        classes += props.baseValue > 0
+            ? ' bg-white text-black'
+            : ' bg-red-200 text-red-700 relative hover:bg-red-300 ease-in-out duration-200 transition-colors cursor-pointer text-gray-500';
+    }
+    return classes;
 })
 
 const showSelectionWheel = () => {

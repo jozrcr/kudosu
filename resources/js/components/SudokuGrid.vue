@@ -12,6 +12,7 @@
         :key="colIndex"
         :base-value="cell"
         :current-value="board[rowIndex][colIndex]"
+        :is-error="errorBoard[rowIndex][colIndex]"
         :max-value="maxValue"
         @input="updateCell(rowIndex, colIndex, $event)"
         @empty="emptyCell(rowIndex, colIndex)"
@@ -54,9 +55,90 @@ const board = ref([
     [0, 0, 0, 0, 8, 0, 0, 7, 9],
 ])
 
+/*Array that stores the current errors game board */
+const errorBoard = ref([
+    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false, false, false, false, false, false],
+])
+
 const updateCell = (rowIndex, colIndex, value) => {
     board.value[rowIndex][colIndex] = value;
+
+    errorBoard.value = validateSudoku();
 }
+
+const validateSudoku = () => {
+    let temp_board = [
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+    ];
+    for( let i = 0; i < maxValue.value; i++){
+        for( let j = 0; j < maxValue.value; j++) {
+            const cellValue = board.value[i][j];
+            
+            if (cellValue != 0){
+                if(!isValidCellRow(i, j, cellValue) || !isValidCellCol(i, j, cellValue) || !isValidCellBox(i, j, cellValue)){
+                    temp_board[i][j] = true;
+                }
+            }
+        }
+    }
+
+    return temp_board;
+}
+
+//Function to check if a cell is duplicate in a row
+const isValidCellRow = (rowIndex, colIndex, cellValue) => {
+    for(let i = 0; i < maxValue.value; i++) {
+        if( board.value[rowIndex][i] === cellValue && colIndex !== i ){
+            return false;
+        }
+    }
+    return true;
+} 
+
+//Function to check if a cell is duplicate in a col
+const isValidCellCol = (rowIndex, colIndex, cellValue) => {
+    for(let i = 0; i < maxValue.value; i++) {
+        if( board.value[i][colIndex] == cellValue && rowIndex !== i ){
+            return false;
+        }
+    }
+    return true;
+} 
+
+//Function to check if a cell is duplicate in a box
+const isValidCellBox = (rowIndex, colIndex, cellValue) => {
+
+    const boxWidth = Math.sqrt(maxValue.value);
+    //Define which box we are validating
+    const row = rowIndex - (rowIndex % boxWidth);
+    const col = colIndex - (colIndex % boxWidth);
+
+    for (let i = 0; i < row + boxWidth; i++){
+        for (let j = 0; j < col + boxWidth; j++){
+            if( board.value[i][j] === cellValue && i != rowIndex && j !== colIndex){
+                return false;
+            }
+        }
+    }
+    return true;
+} 
+
 
 const emptyCell = (rowIndex, colIndex) => {
     board.value[rowIndex][colIndex] = 0;
