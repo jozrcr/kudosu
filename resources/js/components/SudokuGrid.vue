@@ -1,11 +1,14 @@
 <template>
   <ul
-    class="bg-gray-500/50 p-1 min-w-80 rounded-lg max-w-7xl w-fit h-fit grid grid-rows-9 gap-[0.1rem] md:gap-1 h-"
+    class="bg-gray-600/50 p-1 min-w-80 rounded-lg max-w-7xl w-fit h-fit grid justify-items-center gap-[0.1rem]  md:gap-1 sudoku"
+    :style="maxValueStyle"
   >
     <li
       v-for="(row, rowIndex) in initialBoard"
       :key="rowIndex"
-      class="row grid grid-cols-9 gap-[0.1rem] md:gap-1 sudoku-grid place-content-center justify-items-center"
+      class="row grid gap-[0.1rem] md:gap-1 sudoku-grid place-content-center justify-items-center"
+      :class="[(rowIndex + 1) % boxSize === 0 ? 'pb-[0.125rem] md:pb-1' : '', ((rowIndex + 1) % boxSize) === 1 ? 'pt-[0.125rem] md:pt-1' : '']"
+      :style="maxValueStyle"
     >
       <SudokuCell
         v-for="(cell, colIndex) in row"
@@ -13,6 +16,7 @@
         :base-value="cell"
         :current-value="board[rowIndex][colIndex]"
         :is-error="errorBoard[rowIndex][colIndex]"
+        :class="[(colIndex + 1) % boxSize === 0 ? 'mr-[0.125rem] md:mr-1' : '', ((colIndex + 1) % boxSize) === 1 ? 'ml-[0.125rem] md:ml-1' : '']"
         :max-value="maxValue"
         @input="updateCell(rowIndex, colIndex, $event)"
         @empty="emptyCell(rowIndex, colIndex)"
@@ -22,12 +26,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import SudokuCell from './SudokuCell.vue'
 
 /* Default to 9 for a standard 9x9 Sudoku grid, goal is to be able to select a different difficulty */
 const maxValue = ref(9)
+
+const boxSize = computed(() => parseInt(Math.sqrt(maxValue.value)));
+
+const maxValueStyle = computed(() => {
+    return {
+        '--max-value': maxValue.value,
+        '--box-size': boxSize.value,
+    };
+});
+
 
 /*Array that stores the initial game state*/
 const initialBoard = [
@@ -72,6 +86,8 @@ const updateCell = (rowIndex, colIndex, value) => {
     board.value[rowIndex][colIndex] = value;
 
     errorBoard.value = validateSudoku();
+
+    console.log(serializeGrid());
 }
 
 const validateSudoku = () => {
@@ -124,8 +140,7 @@ const isValidCellCol = (rowIndex, colIndex, cellValue) => {
 //Function to check if a cell is duplicate in a box
 const isValidCellBox = (rowIndex, colIndex, cellValue) => {
 
-    const boxWidth = Math.sqrt(maxValue.value);
-
+    const boxWidth = boxWidth.value;
     //Define which box we are validating
     const row = Math.trunc(rowIndex / boxWidth) * boxWidth;
     const col = Math.trunc(colIndex / boxWidth) * boxWidth;
@@ -148,39 +163,26 @@ const emptyCell = (rowIndex, colIndex) => {
     errorBoard.value = validateSudoku();
 }
 
+const serializeGrid = () =>{
+    let serializedGrid = [];
+
+    for (let i = 0; i < maxValue.value; i++){
+        serializedGrid.push(board.value[i].join(''));
+    }
+
+    return serializedGrid.join("\n");
+}
+
 </script>
 
 <style scoped>
-.sudoku-grid:nth-child(3n) {
-    padding-bottom: 0.25rem;
+
+.sudoku {
+    grid-template-rows: repeat(var(--max-value), minmax(0, 1fr))
 }
 
-.sudoku-grid:nth-child(3n + 1) {
-    padding-top: 0.25rem;
+.sudoku  li {
+    grid-template-columns: repeat(var(--max-value), minmax(0, 1fr))
 }
 
-.sudoku-grid > div:nth-child(3n) {
-    margin-right: 0.25rem;
-}
-
-.sudoku-grid > div:nth-child(3n + 1) {
-    margin-left: 0.25rem;
-}
-@media only screen and (max-width: 600px) {
-    .sudoku-grid:nth-child(3n) {
-        padding-bottom: 0.1rem;
-    }
-
-    .sudoku-grid:nth-child(3n + 1) {
-        padding-top: 0.1rem;
-    }
-
-    .sudoku-grid > div:nth-child(3n) {
-        margin-right: 0.1rem;
-    }
-
-    .sudoku-grid > div:nth-child(3n + 1) {
-        margin-left: 0.1rem;
-    }
-}
 </style>
