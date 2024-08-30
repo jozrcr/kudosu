@@ -7,7 +7,7 @@
       v-for="(row, rowIndex) in initialBoard"
       :key="rowIndex"
       class="row grid gap-[0.1rem] md:gap-1 sudoku-grid place-content-center justify-items-center"
-      :class="[(rowIndex + 1) % boxSize === 0 ? 'pb-[0.125rem] md:pb-1' : '', ((rowIndex + 1) % boxSize) === 1 ? 'pt-[0.125rem] md:pt-1' : '']"
+      :class="[(rowIndex + 1) % boxWidth === 0 ? 'pb-[0.125rem] md:pb-1' : '', ((rowIndex + 1) % boxWidth) === 1 ? 'pt-[0.125rem] md:pt-1' : '']"
       :style="maxValueStyle"
     >
       <SudokuCell
@@ -16,7 +16,7 @@
         :base-value="cell"
         :current-value="board[rowIndex][colIndex]"
         :is-error="errorBoard[rowIndex][colIndex]"
-        :class="[(colIndex + 1) % boxSize === 0 ? 'mr-[0.125rem] md:mr-1' : '', ((colIndex + 1) % boxSize) === 1 ? 'ml-[0.125rem] md:ml-1' : '']"
+        :class="[(colIndex + 1) % boxWidth === 0 ? 'mr-[0.125rem] md:mr-1' : '', ((colIndex + 1) % boxWidth) === 1 ? 'ml-[0.125rem] md:ml-1' : '']"
         :max-value="maxValue"
         @input="updateCell(rowIndex, colIndex, $event)"
         @empty="emptyCell(rowIndex, colIndex)"
@@ -31,65 +31,56 @@ import { ref, computed } from 'vue'
 import SudokuCell from './SudokuCell.vue'
 
 /* Default to 9 for a standard 9x9 Sudoku grid, goal is to be able to select a different difficulty */
-const maxValue = ref(9)
+const maxValue = ref(4)
 
-const boxSize = computed(() => parseInt(Math.sqrt(maxValue.value)));
+const boxWidth =  computed(() => {
 
+    return parseInt(Math.sqrt(maxValue.value));
+});
+
+/* Value used in css to dynamically change the number of columns/rows needed to display the proper grid */
 const maxValueStyle = computed(() => {
+
     return {
         '--max-value': maxValue.value,
-        '--box-size': boxSize.value,
+        '--box-size': boxWidth.value,
     };
 });
 
 
 /*Array that stores the initial game state*/
 const initialBoard = [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9],
+    [1, 3, 0, 0 ],
+    [2, 0, 0, 1 ],
+    [0, 1, 2, 0 ],
+    [3, 0, 0, 0 ],
 ]
 
 /*Array that stores the ongoing game board */
 const board = ref([
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9],
+    [1, 3, 0, 0 ],
+    [2, 0, 0, 1 ],
+    [0, 1, 2, 0 ],
+    [3, 0, 0, 0 ],
 ])
 
 /*Array that stores the current errors game board */
 const errorBoard = ref([
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
+    [false, false, false, false],
+    [false, false, false, false],
+    [false, false, false, false],
+    [false, false, false, false],
 ])
 
 const updateCell = (rowIndex, colIndex, value) => {
     board.value[rowIndex][colIndex] = value;
 
     errorBoard.value = validateSudoku();
-
+    
     console.log(serializeGrid());
 }
 
+/* Returns an array that contains all detected errors in the grid */
 const validateSudoku = () => {
     let temp_board = [
         [false, false, false, false, false, false, false, false, false],
@@ -140,13 +131,13 @@ const isValidCellCol = (rowIndex, colIndex, cellValue) => {
 //Function to check if a cell is duplicate in a box
 const isValidCellBox = (rowIndex, colIndex, cellValue) => {
 
-    const boxWidth = boxWidth.value;
+    const boxSize = boxWidth.value;
     //Define which box we are validating
-    const row = Math.trunc(rowIndex / boxWidth) * boxWidth;
-    const col = Math.trunc(colIndex / boxWidth) * boxWidth;
+    const row = Math.trunc(rowIndex / boxSize) * boxSize;
+    const col = Math.trunc(colIndex / boxSize) * boxSize;
 
-    for (let i = 0; i < boxWidth; i++){
-        for (let j = 0; j < boxWidth; j++){
+    for (let i = 0; i < boxSize; i++){
+        for (let j = 0; j < boxSize; j++){
             const newRow =  row + i;
             const newCol = col + j;
             if(  ( board.value[newRow][newCol] === cellValue ) && newRow != rowIndex && newCol != colIndex ){
