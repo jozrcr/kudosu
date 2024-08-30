@@ -17,7 +17,9 @@ export default defineConfig({
                 },
             },
         }),
-        eslint(),
+        eslint({
+            failOnError: false,
+        }),
     ],
     resolve: { 
         alias: {

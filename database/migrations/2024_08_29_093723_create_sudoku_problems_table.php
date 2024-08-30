@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('unique_hash')->unique();
             $table->string('problem');
             $table->integer('max_value');
+            $table->boolean('is_daily')->default(false);
             $table->date('date')->nullable();
             $table->timestamps();
         });

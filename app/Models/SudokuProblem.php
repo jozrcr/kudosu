@@ -13,6 +13,7 @@ class SudokuProblem extends Model
         'problem',
         'unique_hash',
         'max_value',
+        'is_daily',
         'date',
     ];
 }

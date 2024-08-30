@@ -27,7 +27,12 @@ class ParseGameGrids extends Command
      */
     public function handle()
     {
-        $files = Storage::disk('local')->files('generated_grids');
+        $this->readFileAndCreateEntry('daily_grids', true);
+    }
+
+    public function readFileAndCreateEntry($folder, $is_daily){
+        
+        $files = Storage::disk('local')->files($folder);
 
         foreach($files as $file) {
             $contents = Storage::disk('local')->get($file);
@@ -39,6 +44,7 @@ class ParseGameGrids extends Command
                     'problem' => $contents,
                     'unique_hash' => $uniqueHash,
                     'max_value' => $maxValue,
+                    'is_daily' => $is_daily,
                     'date' => null,
                 ]);
             } catch (\Illuminate\Database\QueryException $e) {
@@ -57,7 +63,6 @@ class ParseGameGrids extends Command
                 }
             }
         }
-
         $this->info('Game grids parsed successfully.');
     }
 
