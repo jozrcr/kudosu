@@ -1,11 +1,11 @@
 <template>
   <picture>
     <source
-      srcset='"/images/"+ image_src+ ".webp"'
+      srcset="'/images/'+ image_src+ '.webp'"
       type="image/webp"
     >
     <source
-      :srcset='"/images/"+ image_src+ ".png"'
+      :srcset="'/images/'+ image_src+ '.png'"
       type="image/png"
     >
     <img
@@ -18,17 +18,27 @@
   </p>
   <ul class="grid grid-cols-1 gap-4 w-96 px-4 max-w-full">
     <li class="w-full flex items-center justify-center text-white font-bold text-xl lg:text-2xl bg-slate-600/50 hover:bg-slate-500/50 drop-shadow-md hover:shadow-md cursor-pointer transition-all duration-200 ease-in-out rounded-lg ">
-      <router-link class="w-full h-full py-4 text-center" to="/play/daily/">
+      <router-link
+        class="w-full h-full py-4 text-center"
+        :to="'/play/' + challengeType + '/easy'"
+      >
         Easy
       </router-link>
     </li>
     <li class="w-full flex items-center justify-center text-white font-bold text-xl lg:text-2xl bg-slate-600/50 hover:bg-slate-500/50 drop-shadow-md hover:shadow-md cursor-pointer transition-all duration-200 ease-in-out rounded-lg  ">
-      <router-link class="w-full h-full py-4 text-center" to="/play/daily/">
+      <router-link
+        class="w-full h-full py-4 text-center"
+        :to="'/play/' + challengeType + '/classic'"
+      >
         Classic
       </router-link>
     </li>
     <li class="w-full flex items-center justify-center text-white font-bold text-xl lg:text-2xl bg-slate-600/50 hover:bg-slate-500/50 drop-shadow-md hover:shadow-md cursor-pointer transition-all duration-200 ease-in-out rounded-lg ">
-      <router-link class="w-full h-full py-4 text-center" to="/play/daily/">
+      <router-link
+        class="w-full h-full py-4 text-center"
+        :to="'/play/' + challengeType + '/hard'"
+        :difficulty="'hard'"
+      >
         Hard
       </router-link>
     </li>
@@ -40,8 +50,7 @@
   
 <script setup>
   
-import { computed, ref, onMounted } from 'vue'
-import axios from 'axios';
+import { computed} from 'vue'
 
 
 const props = defineProps({
@@ -51,26 +60,11 @@ const props = defineProps({
     },
 })
 
-const challenges = ref([]);
 
 const image_src = computed(() => {
     if( props.challengeType == 'daily') return "daily-challenge-logo";
 
     return "random-challenges-logo";
-});
-
-const loadFromServer = () => {
-    axios.get('/api/challenges/' + props.challengeType)
-        .then((res) =>  {
-            challenges.value = res.data;
-            console.log(challenges.value)
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-}
-onMounted(() => {
-    loadFromServer();
 });
 
 </script>

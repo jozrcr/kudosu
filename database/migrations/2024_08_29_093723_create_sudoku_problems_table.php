@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sudoku_problems', function (Blueprint $table) {
             $table->id();
             $table->string('unique_hash')->unique();
-            $table->string('problem');
+            $table->text('problem');
             $table->integer('max_value');
             $table->boolean('is_daily')->default(false);
             $table->date('date')->nullable();

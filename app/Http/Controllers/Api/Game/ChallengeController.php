@@ -6,43 +6,31 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\SudokuProblem;
+use App\Http\Resources\SudokuProblemResource;
 
 class ChallengeController extends Controller
 {
-    public function index($type = 'daily')
-    {
-        $query = SudokuProblem::query();
 
-        if ($type == 'daily') {
-            $query->where('is_daily', true)
-                ->whereNull('date')
-                ->orderBy('created_at', 'ASC');
-        }
-        else{
-            $query->where('is_daily', false)
-            ->orderBy('created_at', 'ASC');
-        }
-
-        $challenges = $query->get();
-        return response()->json($challenges);
-    }
-
-    public function daily($id)
+    public function daily( $maxValue)
     {
         $challenge = SudokuProblem::where('is_daily', true)
-            ->whereNull('date')
-            ->findOrFail($id);
+            ->whereDate('date', now()->toDateString())
+            ->where('max_value', $maxValue)
+            ->orderBy('created_at', 'ASC')
+            ->firstOrFail();
 
-        return response()->json($challenge);
+        return new SudokuProblemResource(
+            resource: $challenge,
+        );
     }
 
-    public function random($id)
+    // Fetches a list of all available random problems for a given maxValue (difficulty)
+    public function random($maxValue)
     {
-        
         $challenge = SudokuProblem::where('is_daily', false)
-            ->findOrFail($id);
+            ->where('maxValue', $maxValue);
 
-        return response()->json($challenge);
+        return response()->json($challenges);
     }
 
 }

@@ -36,6 +36,8 @@ class ParseGameGrids extends Command
 
         foreach($files as $file) {
             $contents = Storage::disk('local')->get($file);
+
+            // Allows to mathematically guarantee grid's uniqueness
             $uniqueHash = crc32($contents);
             $maxValue = $this->getMaxValueFromEncoded($contents);
 

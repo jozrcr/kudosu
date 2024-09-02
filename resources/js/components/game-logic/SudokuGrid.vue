@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="bg-gray-600/50 p-1 min-w-80 rounded-lg max-w-7xl w-fit h-fit grid justify-items-center gap-[0.1rem]  md:gap-1 sudoku"
+    class="bg-gray-600/50 p-1 min-w-80 rounded-lg max-w-7xl 2xl:max-w-[100rem] w-fit h-fit grid justify-items-center gap-[0.1rem]  md:gap-1 sudoku"
     :style="maxValueStyle"
   >
     <li
@@ -26,58 +26,68 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeMount } from 'vue'
 
 import SudokuCell from './SudokuCell.vue'
 
-/* Default to 9 for a standard 9x9 Sudoku grid, goal is to be able to select a different difficulty */
-const maxValue = ref(4)
+const props = defineProps({
+    maxValue: {
+        type: Number,
+        default: 9,
+    },
+    initialBoard: {
+        type: Array,
+
+    }
+})
+
+/*Array that stores the ongoing game board */
+const board = ref([])
+
+/*Array that stores the current errors game board */
+const errorBoard = ref([])
+
+const initializeGameBoard = () => {
+    let temp_board = [];
+    let temp_error_board = [];
+
+    for(let i = 0; i < props.maxValue; i++) {
+        let temp_board_line = [];
+        let temp_error_line = [];
+
+        for(let j = 0; j < props.maxValue; j++) {
+            temp_board_line.push(props.initialBoard[i][j])
+            temp_error_line.push(false)
+        }
+        temp_board.push(temp_board_line)
+        temp_error_board.push(temp_error_line)
+
+    }
+    board.value = temp_board;
+    errorBoard.value = temp_error_board;
+}
 
 const boxWidth =  computed(() => {
 
-    return parseInt(Math.sqrt(maxValue.value));
+    return parseInt(Math.sqrt(props.maxValue));
 });
 
 /* Value used in css to dynamically change the number of columns/rows needed to display the proper grid */
 const maxValueStyle = computed(() => {
 
     return {
-        '--max-value': maxValue.value,
+        '--max-value': props.maxValue,
         '--box-size': boxWidth.value,
     };
 });
 
 
-/*Array that stores the initial game state*/
-const initialBoard = [
-    [1, 3, 0, 0 ],
-    [2, 0, 0, 1 ],
-    [0, 1, 2, 0 ],
-    [3, 0, 0, 0 ],
-]
-
-/*Array that stores the ongoing game board */
-const board = ref([
-    [1, 3, 0, 0 ],
-    [2, 0, 0, 1 ],
-    [0, 1, 2, 0 ],
-    [3, 0, 0, 0 ],
-])
-
-/*Array that stores the current errors game board */
-const errorBoard = ref([
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-])
 
 const updateCell = (rowIndex, colIndex, value) => {
     board.value[rowIndex][colIndex] = value;
 
     errorBoard.value = validateSudoku();
     
-    console.log(serializeGrid());
 }
 
 /* Returns an array that contains all detected errors in the grid */
@@ -93,8 +103,8 @@ const validateSudoku = () => {
         [false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false],
     ];
-    for( let i = 0; i < maxValue.value; i++){
-        for( let j = 0; j < maxValue.value; j++) {
+    for( let i = 0; i < props.maxValue; i++){
+        for( let j = 0; j < props.maxValue; j++) {
             const cellValue = board.value[i][j];
             
             if (cellValue != 0){
@@ -110,7 +120,7 @@ const validateSudoku = () => {
 
 //Function to check if a cell is duplicate in a row
 const isValidCellRow = (rowIndex, colIndex, cellValue) => {
-    for(let i = 0; i < maxValue.value; i++) {
+    for(let i = 0; i < props.maxValue; i++) {
         if( board.value[rowIndex][i] === cellValue && colIndex != i ){
             return false;
         }
@@ -120,7 +130,7 @@ const isValidCellRow = (rowIndex, colIndex, cellValue) => {
 
 //Function to check if a cell is duplicate in a col
 const isValidCellCol = (rowIndex, colIndex, cellValue) => {
-    for(let i = 0; i < maxValue.value; i++) {
+    for(let i = 0; i < props.maxValue; i++) {
         if( board.value[i][colIndex] == cellValue && rowIndex != i ){
             return false;
         }
@@ -154,15 +164,19 @@ const emptyCell = (rowIndex, colIndex) => {
     errorBoard.value = validateSudoku();
 }
 
-const serializeGrid = () =>{
+/* const serializeGrid = () =>{
     let serializedGrid = [];
 
-    for (let i = 0; i < maxValue.value; i++){
+    for (let i = 0; i < props.maxValue; i++){
         serializedGrid.push(board.value[i].join(''));
     }
 
     return serializedGrid.join("\n");
-}
+} */
+
+onBeforeMount(() => {
+    initializeGameBoard();
+});
 
 </script>
 
