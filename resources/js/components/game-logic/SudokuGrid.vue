@@ -1,12 +1,12 @@
 <template>
   <ul
-    class="bg-gray-600/50 p-1 min-w-80 rounded-lg max-w-7xl 2xl:max-w-[100rem] w-fit h-fit grid justify-items-center gap-[0.1rem]  md:gap-1 sudoku"
+    class="bg-gray-600/50 p-[0.125rem] sm:p-1 min-w-80 rounded-lg max-w-7xl 2xl:max-w-[100rem] w-fit h-fit grid justify-items-center gap-[0.1rem]  md:gap-1 sudoku"
     :style="maxValueStyle"
   >
     <li
       v-for="(row, rowIndex) in initialBoard"
       :key="rowIndex"
-      class="row grid gap-[0.1rem] md:gap-1 sudoku-grid place-content-center justify-items-center"
+      class="row grid gap-[0.2rem] sm:gap-1 sudoku-grid place-content-center justify-items-center"
       :class="[(rowIndex + 1) % boxWidth === 0 ? 'pb-[0.125rem] md:pb-1' : '', ((rowIndex + 1) % boxWidth) === 1 ? 'pt-[0.125rem] md:pt-1' : '']"
       :style="maxValueStyle"
     >
@@ -189,5 +189,6 @@ onBeforeMount(() => {
 .sudoku  li {
     grid-template-columns: repeat(var(--max-value), minmax(0, 1fr))
 }
+
 
 </style>

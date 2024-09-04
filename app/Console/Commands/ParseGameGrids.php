@@ -27,7 +27,10 @@ class ParseGameGrids extends Command
      */
     public function handle()
     {
-        $this->readFileAndCreateEntry('daily_grids', true);
+        $isDaily = true;
+        $this->readFileAndCreateEntry('daily_grids', $isDaily);
+
+        $this->readFileAndCreateEntry('random_grids', !$isDaily);
     }
 
     public function readFileAndCreateEntry($folder, $is_daily){
