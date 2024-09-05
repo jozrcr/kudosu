@@ -27,6 +27,7 @@
 
 <script setup>
 import { ref, computed, onBeforeMount } from 'vue'
+import Cookies from 'js-cookie';
 
 import SudokuCell from './SudokuCell.vue'
 
@@ -38,6 +39,10 @@ const props = defineProps({
     initialBoard: {
         type: Array,
 
+    },
+    decodeProblem: {
+        type: Function,
+        required: true,
     }
 })
 
@@ -48,6 +53,24 @@ const board = ref([])
 const errorBoard = ref([])
 
 const initializeGameBoard = () => {
+    let canLoadFromCookies = false;
+    let decodedGameState;
+
+    const savedGameState = Cookies.get('gameState');
+
+    if (savedGameState) {
+        decodedGameState = JSON.parse(savedGameState);
+        const savedDate = new Date(decodedGameState.date);
+        const today = new Date();
+
+        if (
+            savedDate.getDate() === today.getDate() &&
+            savedDate.getMonth() === today.getMonth() &&
+            savedDate.getFullYear() === today.getFullYear() &&
+            decodedGameState.maxValue === props.maxValue
+        ) canLoadFromCookies = true;
+    } 
+
     let temp_board = [];
     let temp_error_board = [];
 
@@ -63,7 +86,15 @@ const initializeGameBoard = () => {
         temp_error_board.push(temp_error_line)
 
     }
-    board.value = temp_board;
+
+    if (canLoadFromCookies){
+        const decodedArray = props.decodeProblem(decodedGameState.gameState);
+        console.log(decodedGameState.gameState);
+        board.value = decodedArray;
+    } 
+
+    else board.value = temp_board;
+
     errorBoard.value = temp_error_board;
 }
 
@@ -87,6 +118,9 @@ const updateCell = (rowIndex, colIndex, value) => {
     board.value[rowIndex][colIndex] = value;
 
     errorBoard.value = validateSudoku();
+
+    const encodedGameState = encodeArray();
+    Cookies.set('gameState', JSON.stringify(encodedGameState));
     
 }
 
@@ -162,20 +196,30 @@ const emptyCell = (rowIndex, colIndex) => {
     board.value[rowIndex][colIndex] = 0;
 
     errorBoard.value = validateSudoku();
+    const encodedGameState = encodeArray();
+    Cookies.set('gameState', JSON.stringify(encodedGameState));
 }
 
-/* const serializeGrid = () =>{
-    let serializedGrid = [];
-
+const encodeArray = () => {
+    let encodedArray = '';
     for (let i = 0; i < props.maxValue; i++){
-        serializedGrid.push(board.value[i].join(''));
+        let encodedRow = '';
+        for (let j=0; j < props.maxValue; j++){
+            encodedRow += String.fromCharCode(48 + board.value[i][j])
+        }
+        if(i != props.maxValue - 1) encodedRow += '\n';
+        encodedArray += encodedRow;
     }
-
-    return serializedGrid.join("\n");
-} */
+    return {
+        gameState: encodedArray,
+        date: new Date().toISOString(),
+        maxValue: props.maxValue,
+    };
+}
 
 onBeforeMount(() => {
     initializeGameBoard();
+    errorBoard.value = validateSudoku();
 });
 
 </script>

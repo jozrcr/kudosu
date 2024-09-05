@@ -17,6 +17,7 @@
     <SudokuGrid 
       :max-value="maxValue" 
       :initial-board="initialBoard"
+      :decode-problem="decodeProblem"
     />
   </div>
   <div v-else>
@@ -59,8 +60,7 @@ const loadFromServer = () => {
     axios.get('/api/challenges/' + props.challengeType + '/' + maxValue.value)
         .then((res) =>  {
             challenge.value = res.data.data;
-            console.log(challenge.value);
-            decodeProblem();
+            initialBoard.value = decodeProblem(challenge.value['problem']);
             dataFetched.value = true;
         })
         .catch((error) => {
@@ -68,8 +68,7 @@ const loadFromServer = () => {
         });
 }
 
-const decodeProblem = () => {
-    let encodedProblem = challenge.value['problem'];
+const decodeProblem = (encodedProblem) => {
     encodedProblem = encodedProblem.split("\n");
 
     let encodedArrayProblem = [];
@@ -78,7 +77,7 @@ const decodeProblem = () => {
         encodedArrayProblem.push(line.split(''))
     });
 
-    decodeArray(encodedArrayProblem);
+    return decodeArray(encodedArrayProblem);
 
 }
 
@@ -88,7 +87,7 @@ const decodeArray = (array) => {
             array[i][j] = parseInt(array[i][j].charCodeAt(0) - 48);
         }
     }
-    initialBoard.value = array;
+    return array;
 }
 
 onMounted(() => {

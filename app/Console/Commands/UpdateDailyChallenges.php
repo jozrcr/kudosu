@@ -40,17 +40,21 @@ class UpdateDailyChallenges extends Command
             }
         }
 
+
         // If there are any missing daily challenges, fetch new challenges for the missing max_value values
         if (!empty($missingChallenges)) {
-            $newChallenges = SudokuProblem::where('is_daily', true)
-                ->whereNull('date')
-                ->whereIn('max_value', $missingChallenges)
-                ->orderBy('created_at', 'ASC')
-                ->take(count($missingChallenges))
-                ->get();
-            foreach ($newChallenges as $challenge) {
-                $challenge->date = now()->toDateString();
-                $challenge->save();
+            foreach($missingChallenges as $maxValue){
+                $newChallenge = SudokuProblem::where('is_daily', true)
+                    ->whereNull('date')
+                    ->where('max_value', $maxValue)
+                    ->orderBy('created_at', 'ASC')
+                    ->first();
+
+                if ($newChallenge) {
+                    $newChallenge->date = now()->toDateString();
+                    $newChallenge->save();
+
+                }
             }
         }
         
