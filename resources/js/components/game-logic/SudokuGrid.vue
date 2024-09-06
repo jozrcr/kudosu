@@ -38,12 +38,15 @@ const props = defineProps({
     },
     initialBoard: {
         type: Array,
-
+    },
+    uniqueHash: {
+        type: String,
+        required: true,
     },
     decodeProblem: {
         type: Function,
         required: true,
-    }
+    },
 })
 
 /*Array that stores the ongoing game board */
@@ -56,7 +59,7 @@ const initializeGameBoard = () => {
     let canLoadFromCookies = false;
     let decodedGameState;
 
-    const savedGameState = Cookies.get('gameState');
+    const savedGameState = Cookies.get('gameState_'+props.uniqueHash);
 
     if (savedGameState) {
         decodedGameState = JSON.parse(savedGameState);
@@ -120,8 +123,19 @@ const updateCell = (rowIndex, colIndex, value) => {
     errorBoard.value = validateSudoku();
 
     const encodedGameState = encodeArray();
-    Cookies.set('gameState', JSON.stringify(encodedGameState));
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    Cookies.set('gameState_'+props.uniqueHash, JSON.stringify(encodedGameState), { expires });
     
+}
+
+//Function to empty a cell
+const emptyCell = (rowIndex, colIndex) => {
+    board.value[rowIndex][colIndex] = 0;
+
+    errorBoard.value = validateSudoku();
+    const encodedGameState = encodeArray();
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    Cookies.set('gameState_'+props.uniqueHash, JSON.stringify(encodedGameState), { expires });
 }
 
 /* Returns an array that contains all detected errors in the grid */
@@ -192,14 +206,7 @@ const isValidCellBox = (rowIndex, colIndex, cellValue) => {
     return true;
 } 
 
-const emptyCell = (rowIndex, colIndex) => {
-    board.value[rowIndex][colIndex] = 0;
-
-    errorBoard.value = validateSudoku();
-    const encodedGameState = encodeArray();
-    Cookies.set('gameState', JSON.stringify(encodedGameState));
-}
-
+//Returns all the data necessary to store the gamestate inside a cookie
 const encodeArray = () => {
     let encodedArray = '';
     for (let i = 0; i < props.maxValue; i++){
@@ -214,6 +221,7 @@ const encodeArray = () => {
         gameState: encodedArray,
         date: new Date().toISOString(),
         maxValue: props.maxValue,
+        uniqueHash: props.uniqueHash,
     };
 }
 

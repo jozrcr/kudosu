@@ -73,7 +73,6 @@ class ParseGameGrids extends Command
 
     public function getMaxValueFromEncoded($encodedString){
         $rows = explode("\n", $encodedString);
-        error_log(json_encode($rows));
         $maxValue = count($rows);
 
         return $maxValue;

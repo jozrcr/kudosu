@@ -17,6 +17,7 @@
     <SudokuGrid 
       :max-value="maxValue" 
       :initial-board="initialBoard"
+      :unique-hash="uniqueHash"
       :decode-problem="decodeProblem"
     />
   </div>
@@ -45,6 +46,7 @@ const dataFetched = ref(false);
 
 const challenge = ref([]);
 const initialBoard = ref([]);
+const uniqueHash = ref("");
 
 const maxValue = computed( () => {
     switch (props.difficulty) {
@@ -61,6 +63,7 @@ const loadFromServer = () => {
         .then((res) =>  {
             challenge.value = res.data.data;
             initialBoard.value = decodeProblem(challenge.value['problem']);
+            uniqueHash.value = challenge.value['unique_hash'];
             dataFetched.value = true;
         })
         .catch((error) => {
