@@ -18,6 +18,7 @@
         :is-error="errorBoard[rowIndex][colIndex]"
         :class="[(colIndex + 1) % boxWidth === 0 ? 'mr-[0.125rem] md:mr-1' : '', ((colIndex + 1) % boxWidth) === 1 ? 'ml-[0.125rem] md:ml-1' : '']"
         :max-value="maxValue"
+        :is-board-complete="isBoardComplete"
         @input="updateCell(rowIndex, colIndex, $event)"
         @empty="emptyCell(rowIndex, colIndex)"
       />
@@ -55,12 +56,21 @@ const board = ref([])
 /*Array that stores the current errors game board */
 const errorBoard = ref([])
 
+const errorsCount = ref(0);
+
+const emptyCellsCount = ref(0);
+
+const isBoardComplete = computed( () => {
+    return errorsCount.value == 0 && emptyCellsCount.value == 0;
+});
+
 const initializeGameBoard = () => {
     let canLoadFromCookies = false;
     let decodedGameState;
 
     const savedGameState = Cookies.get('gameState_'+props.uniqueHash);
 
+    // If a cookie with the game's has is found, allow loading game from cookies
     if (savedGameState) {
         decodedGameState = JSON.parse(savedGameState);
         const savedDate = new Date(decodedGameState.date);
@@ -92,7 +102,6 @@ const initializeGameBoard = () => {
 
     if (canLoadFromCookies){
         const decodedArray = props.decodeProblem(decodedGameState.gameState);
-        console.log(decodedGameState.gameState);
         board.value = decodedArray;
     } 
 
@@ -125,6 +134,8 @@ const updateCell = (rowIndex, colIndex, value) => {
     const encodedGameState = encodeArray();
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
     Cookies.set('gameState_'+props.uniqueHash, JSON.stringify(encodedGameState), { expires });
+
+    console.log(emptyCellsCount.value + ' cellules restantes, ' + errorsCount.value + ' erreurs détectées.')
     
 }
 
@@ -151,6 +162,8 @@ const validateSudoku = () => {
         [false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false],
     ];
+    emptyCellsCount.value = 0;
+    errorsCount.value = 0;
     for( let i = 0; i < props.maxValue; i++){
         for( let j = 0; j < props.maxValue; j++) {
             const cellValue = board.value[i][j];
@@ -158,7 +171,11 @@ const validateSudoku = () => {
             if (cellValue != 0){
                 if(!isValidCellRow(i, j, cellValue) || !isValidCellCol(i, j, cellValue) || !isValidCellBox(i, j, cellValue)){
                     temp_board[i][j] = true;
+                    errorsCount.value += 1;
                 }
+            }
+            else {
+                emptyCellsCount.value += 1;
             }
         }
     }
