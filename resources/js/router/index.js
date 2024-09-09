@@ -3,6 +3,7 @@ import HomePage from '../components/HomePage.vue'
 import GameSelection from '../components/GameSelection.vue'
 import GamePage from '../components/game-logic/GamePage.vue'
 import NotFound from '../components/NotFoundPage.vue'
+import InformationsPage from '../components/InformationsPage.vue'
 
 const routes = [
     { path: '/', component: HomePage },
@@ -10,6 +11,7 @@ const routes = [
     { path: '/play/random', component: GameSelection, props: {challengeType: 'random'} },
     { path: '/play/:challengeType/:difficulty', component: GamePage, props: true},
     { path: '/game', component: GamePage },
+    { path: '/about', component: InformationsPage },
     { path: '/:pathMatch(.*)*', component: NotFound },
 ]
 
