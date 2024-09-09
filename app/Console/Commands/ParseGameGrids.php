@@ -13,7 +13,7 @@ class ParseGameGrids extends Command
      *
      * @var string
      */
-    protected $signature = 'game:parse-grids';
+    protected $signature = 'game:parse-grids {--hide-solution}';
 
     /**
      * The console command description.
@@ -34,11 +34,17 @@ class ParseGameGrids extends Command
     }
 
     public function readFileAndCreateEntry($folder, $is_daily){
-        
+
+        $hideSolution = $this->option('hide-solution');
+
         $files = Storage::disk('local')->files($folder);
 
         foreach($files as $file) {
             $contents = Storage::disk('local')->get($file);
+
+            if($hideSolution !== null){
+                $contents = $this->hideSolution($contents);
+            }
 
             // Allows to mathematically guarantee grid's uniqueness
             $uniqueHash = crc32($contents);
@@ -76,5 +82,27 @@ class ParseGameGrids extends Command
         $maxValue = count($rows);
 
         return $maxValue;
+    }
+
+    private function hideSolution(string $contents): string
+    {
+        $rows = explode("\n", $contents);
+        $maxValue = count($rows);
+        $minRandValue = (int) sqrt($maxValue) - 1;
+
+        foreach ($rows as &$row) {
+            $values = str_split($row);
+            $numValuesToHide = rand($minRandValue, count($values) - 1);
+            $valuesToHide = array_rand($values, $numValuesToHide);
+            
+            if (!is_array($valuesToHide)) {
+                $valuesToHide = [$valuesToHide];
+            }
+            foreach ($valuesToHide as $index) {
+                $values[$index] = 0;
+            }
+            $row = implode($values);
+        }
+        return implode("\n", $rows);
     }
 }

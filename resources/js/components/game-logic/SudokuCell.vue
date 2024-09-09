@@ -120,7 +120,10 @@ const onClickAway = () => {
         width: 100%;
         height: 100%;
         padding: 0.1rem;
+        min-width:1.35rem;
+        min-height:1.35rem;
     }
+
 @media only screen and (min-width: 640px) {
     .sudoku-cell{
         padding: 0.25rem;

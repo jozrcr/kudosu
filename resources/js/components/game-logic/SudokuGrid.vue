@@ -124,8 +124,7 @@ const maxValueStyle = computed(() => {
     };
 });
 
-
-
+// Update current board's cell value, validate sudoku and save game's progress
 const updateCell = (rowIndex, colIndex, value) => {
     board.value[rowIndex][colIndex] = value;
 
@@ -133,9 +132,8 @@ const updateCell = (rowIndex, colIndex, value) => {
 
     const encodedGameState = encodeArray();
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    Cookies.set('gameState_'+props.uniqueHash, JSON.stringify(encodedGameState), { expires });
-
-    console.log(emptyCellsCount.value + ' cellules restantes, ' + errorsCount.value + ' erreurs détectées.')
+    Cookies.set('gameState_'+props.uniqueHash, JSON.stringify(encodedGameState), { expires,
+        sameSite: 'Lax' });
     
 }
 
@@ -146,22 +144,24 @@ const emptyCell = (rowIndex, colIndex) => {
     errorBoard.value = validateSudoku();
     const encodedGameState = encodeArray();
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    Cookies.set('gameState_'+props.uniqueHash, JSON.stringify(encodedGameState), { expires });
+    Cookies.set('gameState_'+props.uniqueHash, JSON.stringify(encodedGameState), { expires,
+        sameSite: 'Lax' });
 }
 
 /* Returns an array that contains all detected errors in the grid */
 const validateSudoku = () => {
-    let temp_board = [
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-    ];
+    let temp_board = [];
+
+    for(let i = 0; i < props.maxValue; i++) {
+        let temp_board_line = [];
+
+        for(let j = 0; j < props.maxValue; j++) {
+            temp_board_line.push(false)
+        }
+        temp_board.push(temp_board_line)
+
+    }
+
     emptyCellsCount.value = 0;
     errorsCount.value = 0;
     for( let i = 0; i < props.maxValue; i++){
