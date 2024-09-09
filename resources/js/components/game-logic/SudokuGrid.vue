@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="bg-gray-600/50 p-[0.125rem] sm:p-1 min-w-80 rounded-lg max-w-7xl 2xl:max-w-[100rem] w-fit h-fit grid justify-items-center gap-[0.1rem]  md:gap-1 sudoku"
+    class="bg-gray-600/50 p-[0.125rem] sm:p-1 min-w-50 rounded-lg max-w-7xl 2xl:max-w-[100rem] w-fit h-fit grid justify-items-center gap-[0.1rem]  md:gap-1 sudoku"
     :style="maxValueStyle"
   >
     <li

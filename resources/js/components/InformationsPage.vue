@@ -20,6 +20,10 @@
       When a puzzle is solved, the grid turns green and you can't change the values any longer. <br><br>
       The goal would be to add more animations and user interactions to create an overall excellent experience.
     </p>
+
+    <p class="pt-10 max-w-3xl xl:text-lg">
+      The app uses cookies to save the puzzle's state on every move.
+    </p>
     
 
     <a

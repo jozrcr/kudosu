@@ -3,14 +3,14 @@
   <div 
     id="app"
   > 
-    <nav class="fixed top-4 left-0 w-full flex items-center justify-between">
+    <nav class="fixed top-4 left-0 w-full flex items-center justify-between z-20">
       <div class="flex items-center justify-center ">
         <router-link
           class="w-full h-full px-4  text-center"
           to="/"
         >
           <svg
-            class="fill-white w-10 lg:w-14 p-3 bg-slate-500/50 hover:bg-slate-400/50 drop-shadow-md hover:shadow-md cursor-pointer transition-all duration-200 ease-in-out rounded-lg"
+            class="fill-white w-10 lg:w-14 p-2 lg:p-3 bg-slate-500/50 hover:bg-slate-400/50 drop-shadow-md hover:shadow-md cursor-pointer transition-all duration-200 ease-in-out rounded-lg"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
@@ -23,7 +23,7 @@
           to="/about"
         >
           <svg
-            class="fill-white p-3 w-10 lg:w-14 bg-slate-500/50 hover:bg-slate-400/50 drop-shadow-md hover:shadow-md cursor-pointer transition-all duration-200 ease-in-out rounded-lg"
+            class="fill-white p-2 lg:p-3 w-10 lg:w-14 bg-slate-500/50 hover:bg-slate-400/50 drop-shadow-md hover:shadow-md cursor-pointer transition-all duration-200 ease-in-out rounded-lg"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
