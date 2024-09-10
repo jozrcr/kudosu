@@ -13,6 +13,7 @@
         :max-value="maxValue"
         @select="handleNumberSelect"
         @hide="showSelectionWheel"
+        @empty="emptyCell"
       />
     </Transition>
   </div>
